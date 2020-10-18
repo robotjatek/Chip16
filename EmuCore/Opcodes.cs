@@ -32,6 +32,9 @@
         // 3x - Stores
         public static byte STM = 0x30;
 
+        // 4x - Addidion
+        public static byte ADDI = 0x40;
+
         // 6x - Bitwise AND
         public static byte TSTI = 0x63;
 

@@ -18,7 +18,8 @@ namespace EmuCore
                 { Opcodes.NOP, NOP },
                 { Opcodes.TSTI, TSTI },
                 { Opcodes.J, J },
-                { Opcodes.XOR, XOR }
+                { Opcodes.XOR, XOR },
+                { Opcodes.ADDI, ADDI },
             };
         }
 
@@ -99,6 +100,20 @@ namespace EmuCore
             registers.GP[x] = (short)(registers.GP[x] ^ registers.GP[y]);
             registers.SetZeroFlag(registers.GP[x] == 0);
             registers.SetNegativeFlag(registers.GP[x] < 0);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> ADDI = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var operand1 = registers.GP[x];
+            var operand2 = BitConverter.ToInt16(instruction.Parameters, 1);
+            registers.GP[x] = (short)(operand1 + operand2);
+
+            registers.SetZeroFlag(registers.GP[x] == 0);
+            registers.SetNegativeFlag(registers.GP[x] < 0);
+            var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
+            registers.SetOverflowFlag(overflow);
+            registers.SetCarryFlag(operand1 + operand2 > unchecked((short)0xffff));
         };
     }
 }

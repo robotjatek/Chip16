@@ -267,5 +267,103 @@ namespace EmulatorTests
             Mock.Get(registers).Verify(r => r.SetZeroFlag(true));
             Mock.Get(registers).Verify(r => r.SetNegativeFlag(false));
         }
+
+        [Fact]
+        public void TestADDI()
+        {
+            var gp = new short[16];
+            gp[1] = 1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 1, 0 });
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            gp[1].Should().Be(2);
+        }
+
+        [Fact]
+        public void TestADDISetsZeroFlag()
+        {
+            var gp = new short[16];
+            gp[1] = -1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 1, 0 });
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            gp[1].Should().Be(0);
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(true));
+        }
+
+        [Fact]
+        public void TestADDISetsNegtiveFlag()
+        {
+            var gp = new short[16];
+            gp[1] = -1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 0xff, 0xff }); //0xffff == -1
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            gp[1].Should().Be(-2);
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(true));
+        }
+
+        [Fact]
+        public void TestADDISetsOverflowFlag()
+        {
+            var gp = new short[16];
+            gp[1] = unchecked((short)0x7fff);
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 0xff, 0x7f });
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetOverflowFlag(true));
+        }
+
+        [Fact]
+        public void TestADDISetsOverflowFlag2()
+        {
+            var gp = new short[16];
+            gp[1] = 1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 0xff, 0x7f });
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetOverflowFlag(true));
+        }
+
+        [Fact]
+        public void TestADDISetsCarryFlag()
+        {
+            var gp = new short[16];
+            gp[1] = 1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instructrion = new Instruction(Opcodes.ADDI, new byte[] { 0x1, 0xff, 0xff });
+            var operation = sut[Opcodes.ADDI];
+            operation(instructrion, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
+        }
     }
 }
