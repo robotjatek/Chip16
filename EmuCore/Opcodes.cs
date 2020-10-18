@@ -39,8 +39,11 @@
         // 6x - Bitwise AND
         public static byte TSTI = 0x63;
 
-        // 8x -Bitwise XOR
+        // 8x - Bitwise XOR
         public static byte XOR = 0x81;
+
+        // 9x - Multiplication
+        public static byte MUL2 = 0x92;
 
         // Ax - Division
         public static byte DIV2 = 0xA2;

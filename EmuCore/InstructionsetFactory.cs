@@ -22,6 +22,7 @@ namespace EmuCore
                 { Opcodes.ADDI, ADDI },
                 { Opcodes.DIV2, DIV2 },
                 { Opcodes.RET, RET },
+                { Opcodes.MUL2, MUL2 },
             };
         }
 
@@ -135,6 +136,20 @@ namespace EmuCore
         {
             registers.DecrementSP();
             registers.PC = (ushort)bus.Read16(registers.SP);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> MUL2 = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var y = instruction.Parameters[0] >> 4;
+            var z = instruction.Parameters[1] & 0b1111;
+
+            var result = registers.GP[x] * registers.GP[y];
+            registers.GP[z] = (short)result;
+
+            registers.SetZeroFlag(result == 0);
+            registers.SetNegativeFlag(result < 0);
+            registers.SetCarryFlag(result > (result & 0xffff));
         };
     }
 }

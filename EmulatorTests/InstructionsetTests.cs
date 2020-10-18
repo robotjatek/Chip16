@@ -475,5 +475,79 @@ namespace EmulatorTests
             //set PC to [SP]
             Mock.Get(registers).VerifySet(r => r.PC = 0xabcd);
         }
+
+        [Fact]
+        public void TestMUL2()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            gp[4] = 3;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.MUL2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.MUL2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(6);
+        }
+
+        [Fact]
+        public void TestMUL2SetsZeroFlag()
+        {
+            var gp = new short[16];
+            gp[2] = 0;
+            gp[4] = 3;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.MUL2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.MUL2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(0);
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(true));
+        }
+
+        [Fact]
+        public void TestMUL2SetsNegativeFlag()
+        {
+            var gp = new short[16];
+            gp[2] = -2;
+            gp[4] = 3;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.MUL2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.MUL2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(-6);
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(true));
+        }
+
+        [Fact]
+        public void TestMUL2SetsCarryFlag()
+        {
+            var gp = new short[16];
+            gp[2] = 0x2000;
+            gp[4] = 0x0100;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.MUL2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.MUL2];
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
+        }
     }
 }
