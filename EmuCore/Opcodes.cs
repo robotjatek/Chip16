@@ -23,6 +23,7 @@
         public static byte JMP = 0x10;
         public static byte J = 0x12;
         public static byte CALL = 0x14;
+        public static byte RET = 0x15;
 
         // 2x - Loads
         public static byte LDI = 0x20;

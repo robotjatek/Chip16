@@ -16,5 +16,6 @@
         void SetOverflowFlag(bool value);
 
         void SetNegativeFlag(bool value);
+        void DecrementSP();
     }
 }

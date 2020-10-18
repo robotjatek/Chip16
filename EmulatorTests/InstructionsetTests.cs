@@ -457,5 +457,23 @@ namespace EmulatorTests
             gp[8].Should().Be(1);
             Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
         }
+
+        [Fact]
+        public void TestRET()
+        {
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.SP).Returns(0);
+            var bus = Mock.Of<IBus>();
+            Mock.Get(bus).Setup(b => b.Read16(0)).Returns(unchecked((short)0xabcd));
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.RET, new byte[] { 0, 0, 0 });
+            var operation = sut[Opcodes.RET];
+            operation(instruction, registers, bus);
+
+            //Decrease SP by 2
+            Mock.Get(registers).Verify(r => r.DecrementSP());
+            //set PC to [SP]
+            Mock.Get(registers).VerifySet(r => r.PC = 0xabcd);
+        }
     }
 }

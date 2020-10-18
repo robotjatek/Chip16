@@ -21,6 +21,7 @@ namespace EmuCore
                 { Opcodes.XOR, XOR },
                 { Opcodes.ADDI, ADDI },
                 { Opcodes.DIV2, DIV2 },
+                { Opcodes.RET, RET },
             };
         }
 
@@ -128,6 +129,12 @@ namespace EmuCore
             registers.SetNegativeFlag(result < 0);
             registers.SetZeroFlag(result == 0);
             registers.SetCarryFlag(registers.GP[x] % registers.GP[y] != 0);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> RET = (instruction, registers, bus) =>
+        {
+            registers.DecrementSP();
+            registers.PC = (ushort)bus.Read16(registers.SP);
         };
     }
 }

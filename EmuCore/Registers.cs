@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EmuCore
+﻿namespace EmuCore
 {
     public class Registers : IRegisters
     {
@@ -12,9 +10,9 @@ namespace EmuCore
             public const byte NEGATIVE = 0b10000000;
         }
 
-        private const UInt16 START_ROM = 0;
-        private const UInt16 START_STACK = 0xFDF0;
-        private const UInt16 START_IO = 0xFFF0;
+        private const ushort START_ROM = 0;
+        private const ushort START_STACK = 0xFDF0;
+        private const ushort START_IO = 0xFFF0;
 
         public ushort PC { get; set; } = START_ROM;
         public ushort SP { get; set; } = START_STACK;
@@ -98,6 +96,11 @@ namespace EmuCore
         private void DisableFlag(byte mask)
         {
             FLAGS &= unchecked((byte)~mask);
+        }
+
+        public void DecrementSP()
+        {
+            SP -= 2;
         }
     }
 }
