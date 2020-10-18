@@ -365,5 +365,97 @@ namespace EmulatorTests
 
             Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
         }
+
+        [Fact]
+        public void TestDiv2()
+        {
+            var gp = new short[16];
+            gp[2] = 10;
+            gp[4] = 5;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.DIV2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.DIV2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(2);
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(false));
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(false));
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(false));
+        }
+
+        [Fact]
+        public void TestDiv2SetsZeroFlag()
+        {
+            var gp = new short[16];
+            gp[2] = 0;
+            gp[4] = 5;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.DIV2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.DIV2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(0);
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(true));
+        }
+
+        [Fact]
+        public void TestDiv2SetsNegativeFlag()
+        {
+            var gp = new short[16];
+            gp[2] = -10;
+            gp[4] = 5;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.DIV2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.DIV2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(-2);
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(true));
+        }
+
+        [Fact]
+        public void TestDiv2SetsNegativeFlag2()
+        {
+            var gp = new short[16];
+            gp[2] = 10;
+            gp[4] = -5;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.DIV2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.DIV2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(-2);
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(true));
+        }
+
+        [Fact]
+        public void TestDiv2SetsCarryFlag()
+        {
+            var gp = new short[16];
+            gp[2] = 3;
+            gp[4] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var instruction = new Instruction(Opcodes.DIV2, new byte[] { 0x42, 0x08, 0 });
+            var operation = sut[Opcodes.DIV2];
+            operation(instruction, registers, bus);
+
+            gp[8].Should().Be(1);
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
+        }
     }
 }

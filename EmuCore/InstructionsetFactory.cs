@@ -20,6 +20,7 @@ namespace EmuCore
                 { Opcodes.J, J },
                 { Opcodes.XOR, XOR },
                 { Opcodes.ADDI, ADDI },
+                { Opcodes.DIV2, DIV2 },
             };
         }
 
@@ -114,6 +115,19 @@ namespace EmuCore
             var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
             registers.SetOverflowFlag(overflow);
             registers.SetCarryFlag(operand1 + operand2 > unchecked((short)0xffff));
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> DIV2 = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var y = instruction.Parameters[0] >> 4;
+            var z = instruction.Parameters[1] & 0b1111;
+
+            var result = (short)(registers.GP[x] / registers.GP[y]);
+            registers.GP[z] = result;
+            registers.SetNegativeFlag(result < 0);
+            registers.SetZeroFlag(result == 0);
+            registers.SetCarryFlag(registers.GP[x] % registers.GP[y] != 0);
         };
     }
 }

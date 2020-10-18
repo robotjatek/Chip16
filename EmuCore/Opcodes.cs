@@ -40,5 +40,8 @@
 
         // 8x -Bitwise XOR
         public static byte XOR = 0x81;
+
+        // Ax - Division
+        public static byte DIV2 = 0xA2;
     }
 }
