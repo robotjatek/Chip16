@@ -35,6 +35,7 @@
 
         // 4x - Addidion
         public static byte ADDI = 0x40;
+        public static byte ADD = 0x41;
 
         // 6x - Bitwise AND
         public static byte TSTI = 0x63;

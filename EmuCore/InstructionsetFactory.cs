@@ -23,6 +23,7 @@ namespace EmuCore
                 { Opcodes.DIV2, DIV2 },
                 { Opcodes.RET, RET },
                 { Opcodes.MUL2, MUL2 },
+                { Opcodes.ADD, ADD },
             };
         }
 
@@ -110,13 +111,16 @@ namespace EmuCore
             var x = instruction.Parameters[0] & 0b1111;
             var operand1 = registers.GP[x];
             var operand2 = BitConverter.ToInt16(instruction.Parameters, 1);
-            registers.GP[x] = (short)(operand1 + operand2);
+            var result = operand1 + operand2;
+            registers.GP[x] = (short)result;
 
             registers.SetZeroFlag(registers.GP[x] == 0);
             registers.SetNegativeFlag(registers.GP[x] < 0);
             var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
             registers.SetOverflowFlag(overflow);
-            registers.SetCarryFlag(operand1 + operand2 > unchecked((short)0xffff));
+
+            var carry = (((ushort)operand1 + (ushort)operand2) & 0x10000) != 0;
+            registers.SetCarryFlag(carry);
         };
 
         private readonly Action<Instruction, IRegisters, IBus> DIV2 = (instruction, registers, bus) =>
@@ -150,6 +154,23 @@ namespace EmuCore
             registers.SetZeroFlag(result == 0);
             registers.SetNegativeFlag(result < 0);
             registers.SetCarryFlag(result > (result & 0xffff));
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> ADD = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var y = instruction.Parameters[0] >> 4;
+            var operand1 = registers.GP[x];
+            var operand2 = registers.GP[y];
+
+            registers.GP[x] = (short)(operand1 + operand2);
+            registers.SetZeroFlag(registers.GP[x] == 0);
+            registers.SetNegativeFlag(registers.GP[x] < 0);
+            var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
+            registers.SetOverflowFlag(overflow);
+
+            var carry = (((ushort)operand1 + (ushort)operand2) & 0x10000) != 0;
+            registers.SetCarryFlag(carry);
         };
     }
 }
