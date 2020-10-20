@@ -1062,10 +1062,11 @@ namespace EmulatorTests
         [InlineData(0x0, 5, false)]
         [InlineData(-1, 0, true)]
         [InlineData(0b0100_0000_0000_0000, 1, false)]
-        public void TestSHRSetsTheNegativeFlag(short operand1, byte operand2, bool flag)
+        [InlineData(0b1000_0000_0000_0000, 1, false)]
+        public void TestSHRSetsTheNegativeFlag(int operand1, byte operand2, bool flag)
         {
             var gp = new short[16];
-            gp[2] = operand1;
+            gp[2] = (short)operand1;
             var registers = Mock.Of<IRegisters>();
             Mock.Get(registers).Setup(r => r.GP).Returns(gp);
 

@@ -249,7 +249,7 @@ namespace EmuCore
             var x = instruction.Parameters[0] & 0b1111;
             var operand1 = registers.GP[x];
             var operand2 = instruction.Parameters[1] & 0b1111;
-            var result = (short)(operand1 >> operand2);
+            var result = (short)((ushort)operand1 >> operand2);
 
             registers.GP[x] = result;
             registers.SetNegativeFlag(result < 0);
