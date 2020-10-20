@@ -769,5 +769,149 @@ namespace EmulatorTests
 
             Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
         }
+
+        [Fact]
+        public void TestCMPISetsZeroFlag()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0x02, 0x0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(true));
+        }
+
+        [Fact]
+        public void TestCMPISetsZeroFlagToFalse()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0x00, 0x0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(false));
+        }
+
+        [Fact]
+        public void TestCMPISetsNegativeFlagToTrue()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0x04, 0x0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(true));
+        }
+
+        [Fact]
+        public void TestCMPISetsNegativeFlagToFalse()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0x00, 0x0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(false));
+        }
+
+        [Fact]
+        public void TestCMPISetsNegativeFlagToFalseWhenTheResultIsPositive()
+        {
+            var gp = new short[16];
+            gp[2] = 2;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0x01, 0x0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(false));
+        }
+
+        [Fact]
+        public void TestCMPISetsOverflowFlagToTrue()
+        {
+            var gp = new short[16];
+            gp[2] = 0x1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0xff, 0x7f });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetOverflowFlag(true));
+        }
+
+        [Fact]
+        public void TestCMPISetsOverflowFlagToFalse()
+        {
+            var gp = new short[16];
+            gp[2] = 0x1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0, 0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetOverflowFlag(false));
+        }
+
+        [Fact]
+        public void TestCMPISetsCarryFlagToTrue()
+        {
+            var gp = new short[16];
+            gp[2] = 0x0;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0, 1 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(true));
+        }
+
+        [Fact]
+        public void TestCMPISetsCarryFlagToFalse()
+        {
+            var gp = new short[16];
+            gp[2] = 0x1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.CMPI];
+            var instruction = new Instruction(Opcodes.CMPI, new byte[] { 0x2, 0, 0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetCarryFlag(false));
+        }
     }
 }

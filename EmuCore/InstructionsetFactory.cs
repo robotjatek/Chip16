@@ -25,6 +25,7 @@ namespace EmuCore
                 { Opcodes.MUL2, MUL2 },
                 { Opcodes.ADD, ADD },
                 { Opcodes.SUB, SUB },
+                { Opcodes.CMPI, CMPI },
             };
         }
 
@@ -112,12 +113,12 @@ namespace EmuCore
             var x = instruction.Parameters[0] & 0b1111;
             var operand1 = registers.GP[x];
             var operand2 = BitConverter.ToInt16(instruction.Parameters, 1);
-            var result = operand1 + operand2;
-            registers.GP[x] = (short)result;
+            var result = (short)(operand1 + operand2);
+            registers.GP[x] = result;
 
             registers.SetZeroFlag(registers.GP[x] == 0);
             registers.SetNegativeFlag(registers.GP[x] < 0);
-            var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
+            var overflow = CheckOverflow(operand1, operand2, result);
             registers.SetOverflowFlag(overflow);
 
             var carry = (((ushort)operand1 + (ushort)operand2) & 0x10000) != 0;
@@ -163,11 +164,12 @@ namespace EmuCore
             var y = instruction.Parameters[0] >> 4;
             var operand1 = registers.GP[x];
             var operand2 = registers.GP[y];
+            var result = (short)(operand1 + operand2);
 
-            registers.GP[x] = (short)(operand1 + operand2);
+            registers.GP[x] = result;
             registers.SetZeroFlag(registers.GP[x] == 0);
             registers.SetNegativeFlag(registers.GP[x] < 0);
-            var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
+            var overflow = CheckOverflow(operand1, operand2, result);
             registers.SetOverflowFlag(overflow);
 
             var carry = (((ushort)operand1 + (ushort)operand2) & 0x10000) != 0;
@@ -180,15 +182,43 @@ namespace EmuCore
             var y = instruction.Parameters[0] >> 4;
             var operand1 = registers.GP[x];
             var operand2 = registers.GP[y];
+            var result = (short)(operand1 - operand2);
 
-            registers.GP[x] = (short)(operand1 - operand2);
+            registers.GP[x] = result;
             registers.SetZeroFlag(registers.GP[x] == 0);
             registers.SetNegativeFlag(registers.GP[x] < 0);
-            var overflow = (operand1 > 0 && operand2 > 0 && registers.GP[x] < 0) || (operand1 < 0 && operand2 < 0 && registers.GP[x] > 0);
+
+            var overflow = CheckOverflow(operand1, operand2, result);
             registers.SetOverflowFlag(overflow);
 
-            var carry = (((ushort)operand1 - (ushort)operand2) & 0x10000) != 0;
+            var carry = CheckSubCarry(operand1, operand2);
             registers.SetCarryFlag(carry);
         };
+
+        private readonly Action<Instruction, IRegisters, IBus> CMPI = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var operand1 = registers.GP[x];
+            var operand2 = BitConverter.ToInt16(instruction.Parameters, 1);
+            var result = (short)(operand1 - operand2);
+            registers.SetZeroFlag(result == 0);
+            registers.SetNegativeFlag(result < 0);
+
+            var overflow = CheckOverflow(operand1, operand2, result);
+            registers.SetOverflowFlag(overflow);
+
+            var carry = CheckSubCarry(operand1, operand2);
+            registers.SetCarryFlag(carry);
+        };
+
+        private static bool CheckOverflow(short operand1, short operand2, short result)
+        {
+            return (operand1 > 0 && operand2 > 0 && result < 0) || (operand1 < 0 && operand2 < 0 && result > 0);
+        }
+
+        private static bool CheckSubCarry(short operand1, short operand2)
+        {
+            return (((ushort)operand1 - (ushort)operand2) & 0x10000) != 0;
+        }
     }
 }

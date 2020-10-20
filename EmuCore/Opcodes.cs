@@ -3,53 +3,54 @@
     public static class Opcodes
     {
         // 0x - Misc/Video/Audio
-        public static byte NOP = 0x00;
-        public static byte CLS = 0x01;
-        public static byte VBLNK = 0x02;
-        public static byte BGC = 0x03;
-        public static byte SPR = 0x04;
-        public static byte DRW1 = 0x05;
-        public static byte DRW2 = 0x06;
-        public static byte RND = 0x07;
-        public static byte FLIP = 0x08;
-        public static byte SND0 = 0x09;
-        public static byte SND1 = 0x0A;
-        public static byte SND2 = 0x0B;
-        public static byte SND3 = 0x0C;
-        public static byte SNP = 0x0D;
-        public static byte SNG = 0x0E;
+        public const byte NOP = 0x00;
+        public const byte CLS = 0x01;
+        public const byte VBLNK = 0x02;
+        public const byte BGC = 0x03;
+        public const byte SPR = 0x04;
+        public const byte DRW1 = 0x05;
+        public const byte DRW2 = 0x06;
+        public const byte RND = 0x07;
+        public const byte FLIP = 0x08;
+        public const byte SND0 = 0x09;
+        public const byte SND1 = 0x0A;
+        public const byte SND2 = 0x0B;
+        public const byte SND3 = 0x0C;
+        public const byte SNP = 0x0D;
+        public const byte SNG = 0x0E;
 
         // 1x - Jumps(Branches)
-        public static byte JMP = 0x10;
-        public static byte J = 0x12;
-        public static byte CALL = 0x14;
-        public static byte RET = 0x15;
+        public const byte JMP = 0x10;
+        public const byte J = 0x12;
+        public const byte CALL = 0x14;
+        public const byte RET = 0x15;
 
         // 2x - Loads
-        public static byte LDI = 0x20;
-        public static byte LDM = 0x22;
-        public static byte MOV = 0x24;
+        public const byte LDI = 0x20;
+        public const byte LDM = 0x22;
+        public const byte MOV = 0x24;
 
         // 3x - Stores
-        public static byte STM = 0x30;
+        public const byte STM = 0x30;
 
         // 4x - Addidion
-        public static byte ADDI = 0x40;
-        public static byte ADD = 0x41;
+        public const byte ADDI = 0x40;
+        public const byte ADD = 0x41;
 
         // 5x - Subtraction
-        public static byte SUB = 0x51;
+        public const byte SUB = 0x51;
+        public const byte CMPI = 0x53;
 
         // 6x - Bitwise AND
-        public static byte TSTI = 0x63;
+        public const byte TSTI = 0x63;
 
         // 8x - Bitwise XOR
-        public static byte XOR = 0x81;
+        public const byte XOR = 0x81;
 
         // 9x - Multiplication
-        public static byte MUL2 = 0x92;
+        public const byte MUL2 = 0x92;
 
         // Ax - Division
-        public static byte DIV2 = 0xA2;
+        public const byte DIV2 = 0xA2;
     }
 }
