@@ -44,6 +44,9 @@
         // 6x - Bitwise AND
         public const byte TSTI = 0x63;
 
+        // 7x - Bitwise OR
+        public const byte OR = 0x71;
+
         // 8x - Bitwise XOR
         public const byte XOR = 0x81;
 
