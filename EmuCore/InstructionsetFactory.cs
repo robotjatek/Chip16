@@ -31,8 +31,11 @@ namespace EmuCore
                 { Opcodes.SHL, SHL },
                 { Opcodes.SHR, SHR },
                 { Opcodes.OR, OR },
+                { Opcodes.SHL2, SHL2 },
             };
         }
+
+        //TODO: move common parts of the instructions into sub functions eg.: ADD & ADDI esentially do the same, only their parameters differ.
 
         private readonly Action<Instruction, IRegisters, IBus> NOP = (i, r, b) =>
         {
@@ -266,6 +269,21 @@ namespace EmuCore
             registers.SetZeroFlag(result == 0);
             registers.SetNegativeFlag(result < 0);
         };
+
+        private readonly Action<Instruction, IRegisters, IBus> SHL2 = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var y = instruction.Parameters[0] >> 4;
+            var operand1 = registers.GP[x];
+            var operand2 = registers.GP[y];
+
+            var result = (short)(operand1 << operand2);
+
+            registers.GP[x] = result;
+            registers.SetNegativeFlag(result < 0);
+            registers.SetZeroFlag(result == 0);
+        };
+
 
         private static bool CheckOverflow(short operand1, short operand2, short result)
         {
