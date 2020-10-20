@@ -53,6 +53,9 @@
         // Ax - Division
         public const byte DIV2 = 0xA2;
 
+        // Bx - Logical/Arithmetic Shifts
+        public const byte SHL = 0xB0;
+
         // Cx - Push/Pop
         public const byte POP = 0xC1;
         public const byte PUSHF = 0xC4;

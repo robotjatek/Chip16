@@ -28,6 +28,7 @@ namespace EmuCore
                 { Opcodes.CMPI, CMPI },
                 { Opcodes.PUSHF, PUSHF },
                 { Opcodes.POP, POP },
+                { Opcodes.SHL, SHL }
             };
         }
 
@@ -224,6 +225,18 @@ namespace EmuCore
             registers.DecrementSP();
             var x = instruction.Parameters[0] & 0b1111;
             registers.GP[x] = bus.Read16(registers.SP);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> SHL = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var operand1 = registers.GP[x];
+            var operand2 = instruction.Parameters[1] & 0b1111;
+            var result = (short)(operand1 << operand2);
+
+            registers.GP[x] = result;
+            registers.SetNegativeFlag(result < 0);
+            registers.SetZeroFlag(result == 0);
         };
 
         private static bool CheckOverflow(short operand1, short operand2, short result)
