@@ -1,8 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace EmuCore
 {
-    public class GPU
+    public class GPU : IGPU
     {
         byte BG { get; set; } //Nibble!
         byte SpriteWidth { get; set; }
@@ -33,11 +34,11 @@ namespace EmuCore
             Color.FromArgb(0xFF,0xFF,0xFF),
         };
 
-        private readonly IBus _bus;
+        public IBus Bus { get; set; }
 
-        public GPU(IBus bus)
+        public void AcceptCommand(GPUCommands command, byte[] parameters)
         {
-            _bus = bus;
+            throw new NotImplementedException();
         }
     }
 }

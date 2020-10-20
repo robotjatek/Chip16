@@ -8,13 +8,13 @@ namespace EmuCore
         private const int MEMORY_SIZE_BYTES = 65536;
         private readonly byte[] _memory = new byte[MEMORY_SIZE_BYTES];
         private readonly ICPU _cpu;
-        private readonly GPU _gpu;
+        private readonly IGPU _gpu;
         public int Cycles { get; private set; } = 0;
 
-        public Bus(ICPU cpu)
+        public Bus(ICPU cpu, IGPU gpu)
         {
             _cpu = cpu;
-            _gpu = new GPU(this);
+            _gpu = gpu;
         }
 
         public void ExecuteCycle()
@@ -48,6 +48,11 @@ namespace EmuCore
         {
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _memory, address, bytes.Length);
+        }
+
+        public void SendCommandToGPU(GPUCommands command, byte[] parameters)
+        {
+            _gpu.AcceptCommand(command, parameters);
         }
     }
 }

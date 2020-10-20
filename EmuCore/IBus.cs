@@ -11,5 +11,7 @@
         void FillMemory(byte[] bytes, ushort startAddress = 0);
 
         void Write(ushort address, short value);
+
+        void SendCommandToGPU(GPUCommands command, byte[] parameters);
     }
 }
