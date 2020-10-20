@@ -1016,5 +1016,67 @@ namespace EmulatorTests
 
             Mock.Get(registers).Verify(r => r.SetNegativeFlag(flag));
         }
+
+        [Fact]
+        public void TestSHR()
+        {
+            var gp = new short[16];
+            gp[2] = 4;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.SHR];
+            var instruction = new Instruction(Opcodes.SHR, new byte[] { 0x2, 1, 0 });
+
+            operation(instruction, registers, bus);
+
+            gp[2].Should().Be(2);
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(false));
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(false));
+        }
+
+        [Theory]
+        [InlineData(2, 3, true)]
+        [InlineData(2, 0, false)]
+        public void TestSHRSetsTheZeroFlag(short operand1, byte operand2, bool flag)
+        {
+            var gp = new short[16];
+            gp[2] = operand1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.SHR];
+            var instruction = new Instruction(Opcodes.SHR, new byte[] { 0x2, operand2, 0 });
+
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetZeroFlag(flag));
+        }
+
+        [Theory]
+        [InlineData(0x0, 0, false)]
+        [InlineData(0x0, 5, false)]
+        [InlineData(-1, 0, true)]
+        [InlineData(0b0100_0000_0000_0000, 1, false)]
+        public void TestSHRSetsTheNegativeFlag(short operand1, byte operand2, bool flag)
+        {
+            var gp = new short[16];
+            gp[2] = operand1;
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.SHR];
+            var instruction = new Instruction(Opcodes.SHR, new byte[] { 0x2, operand2, 0 });
+
+            operation(instruction, registers, bus);
+
+            Mock.Get(registers).Verify(r => r.SetNegativeFlag(flag));
+        }
     }
 }

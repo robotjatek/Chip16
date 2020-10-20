@@ -28,7 +28,8 @@ namespace EmuCore
                 { Opcodes.CMPI, CMPI },
                 { Opcodes.PUSHF, PUSHF },
                 { Opcodes.POP, POP },
-                { Opcodes.SHL, SHL }
+                { Opcodes.SHL, SHL },
+                { Opcodes.SHR, SHR }
             };
         }
 
@@ -233,6 +234,18 @@ namespace EmuCore
             var operand1 = registers.GP[x];
             var operand2 = instruction.Parameters[1] & 0b1111;
             var result = (short)(operand1 << operand2);
+
+            registers.GP[x] = result;
+            registers.SetNegativeFlag(result < 0);
+            registers.SetZeroFlag(result == 0);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> SHR = (instruction, registers, bus) =>
+        {
+            var x = instruction.Parameters[0] & 0b1111;
+            var operand1 = registers.GP[x];
+            var operand2 = instruction.Parameters[1] & 0b1111;
+            var result = (short)(operand1 >> operand2);
 
             registers.GP[x] = result;
             registers.SetNegativeFlag(result < 0);

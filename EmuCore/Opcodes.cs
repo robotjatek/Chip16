@@ -55,6 +55,7 @@
 
         // Bx - Logical/Arithmetic Shifts
         public const byte SHL = 0xB0;
+        public const byte SHR = 0xB1;
 
         // Cx - Push/Pop
         public const byte POP = 0xC1;
