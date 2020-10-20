@@ -913,5 +913,45 @@ namespace EmulatorTests
 
             Mock.Get(registers).Verify(r => r.SetCarryFlag(false));
         }
+
+        [Fact]
+        public void TestPUSHF()
+        {
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).SetupGet(r => r.SP).Returns(0xabcd);
+            Mock.Get(registers).SetupGet(r => r.FLAGS).Returns(0b10101010);
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.PUSHF];
+            var instruction = new Instruction(Opcodes.PUSHF, new byte[] { 0, 0, 0 });
+            operation(instruction, registers, bus);
+
+            Mock.Get(bus).Verify(b => b.Write(0xabcd, 0b10101010));
+            Mock.Get(registers).Verify(r => r.IncrementSP());
+
+        }
+
+        [Fact]
+        public void TestPOP()
+        {
+            var gp = new short[16];
+            var registers = Mock.Of<IRegisters>();
+            Mock.Get(registers).Setup(r => r.GP).Returns(gp);
+            Mock.Get(registers).SetupGet(r => r.SP).Returns(0xabcd);
+
+            var bus = Mock.Of<IBus>();
+            Mock.Get(bus).Setup(b => b.Read16(It.IsAny<ushort>())).Returns(unchecked((short)0xdead));
+
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.POP];
+            var instruction = new Instruction(Opcodes.POP, new byte[] { 0x02, 0, 0 });
+            operation(instruction, registers, bus);
+
+            //SP--
+            Mock.Get(registers).Verify(r => r.DecrementSP());
+            //RX = Read16(SP)
+            Mock.Get(bus).Verify(b => b.Read16(0xabcd));
+            gp[2].Should().Be(unchecked((short)0xdead));
+        }
     }
 }

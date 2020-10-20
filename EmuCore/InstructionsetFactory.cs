@@ -26,6 +26,8 @@ namespace EmuCore
                 { Opcodes.ADD, ADD },
                 { Opcodes.SUB, SUB },
                 { Opcodes.CMPI, CMPI },
+                { Opcodes.PUSHF, PUSHF },
+                { Opcodes.POP, POP },
             };
         }
 
@@ -209,6 +211,19 @@ namespace EmuCore
 
             var carry = CheckSubCarry(operand1, operand2);
             registers.SetCarryFlag(carry);
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> PUSHF = (instruction, registers, bus) =>
+        {
+            bus.Write(registers.SP, registers.FLAGS);
+            registers.IncrementSP();
+        };
+
+        private readonly Action<Instruction, IRegisters, IBus> POP = (instruction, registers, bus) =>
+        {
+            registers.DecrementSP();
+            var x = instruction.Parameters[0] & 0b1111;
+            registers.GP[x] = bus.Read16(registers.SP);
         };
 
         private static bool CheckOverflow(short operand1, short operand2, short result)

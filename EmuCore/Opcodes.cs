@@ -52,5 +52,9 @@
 
         // Ax - Division
         public const byte DIV2 = 0xA2;
+
+        // Cx - Push/Pop
+        public const byte POP = 0xC1;
+        public const byte PUSHF = 0xC4;
     }
 }
