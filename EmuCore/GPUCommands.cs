@@ -2,6 +2,7 @@
 {
     public enum GPUCommands
     {
-        NOP
+        NOP,
+        SPR
     }
 }

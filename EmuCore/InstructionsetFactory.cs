@@ -32,6 +32,7 @@ namespace EmuCore
                 { Opcodes.SHR, SHR },
                 { Opcodes.OR, OR },
                 { Opcodes.SHL2, SHL2 },
+                { Opcodes.SPR, SPR },
             };
         }
 
@@ -284,6 +285,10 @@ namespace EmuCore
             registers.SetZeroFlag(result == 0);
         };
 
+        private readonly Action<Instruction, IRegisters, IBus> SPR = (instruction, register, bus) =>
+        {
+            bus.SendCommandToGPU(GPUCommands.SPR, instruction.Parameters);
+        };
 
         private static bool CheckOverflow(short operand1, short operand2, short result)
         {

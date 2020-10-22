@@ -1205,5 +1205,19 @@ namespace EmulatorTests
 
             Mock.Get(registers).Verify(r => r.SetNegativeFlag(flag));
         }
+
+        [Fact]
+        public void TestSPR()
+        {
+            var registers = Mock.Of<IRegisters>();
+            var bus = Mock.Of<IBus>();
+            var sut = new InstructionsetFactory().CreateInstructionset();
+            var operation = sut[Opcodes.SPR];
+            var parameters = new byte[] { 0, 0x10, 0x20 };
+            var instruction = new Instruction(Opcodes.SPR, parameters);
+            operation(instruction, registers, bus);
+
+            Mock.Get(bus).Verify(b => b.SendCommandToGPU(GPUCommands.SPR, parameters));
+        }
     }
 }

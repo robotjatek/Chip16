@@ -6,9 +6,10 @@ namespace EmuCore
     public class GPU : IGPU
     {
         byte BG { get; set; } //Nibble!
-        byte SpriteWidth { get; set; }
 
-        byte SpriteHeight { get; set; }
+        public byte SpriteWidth { get; set; }
+
+        public byte SpriteHeight { get; set; }
 
         bool HorizontalFlip { get; set; }
 
@@ -38,7 +39,24 @@ namespace EmuCore
 
         public void AcceptCommand(GPUCommands command, byte[] parameters)
         {
-            throw new NotImplementedException();
+            switch (command)
+            {
+                case GPUCommands.SPR:
+                    SPR(parameters);
+                    break;
+                case GPUCommands.NOP:
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void SPR(byte[] parameters)
+        {
+            var width = parameters[1];
+            var height = parameters[2];
+            SpriteWidth = width;
+            SpriteHeight = height;
         }
     }
 }
